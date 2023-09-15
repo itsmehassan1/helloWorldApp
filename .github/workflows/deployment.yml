@@ -1,0 +1,23 @@
+name: deployment
+on: 
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.PORT }}
+        script: |
+          source ~/.nvm/nvm.sh
+          cd helloWorldApp
+          git pull
+          HELLO_MESSAGE="${{ secrets.HELLO_MESSAGE }}" pm2 restart backend --update-env
